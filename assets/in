@@ -82,7 +82,7 @@ git clone ${single_branch_flag}${depthflag} $uri $branchflag $destination
 cd $destination
 
 git checkout -q $ref || {
-  git fetch $ref:$ref
+  git fetch origin $ref:$ref
   git checkout -q $ref
 }
 git log -1 --oneline
