@@ -238,7 +238,7 @@ fi
 if [ -n "$results" ] ; then
   if [ -n "$tag_filter" ]; then
     {
-        git tag --list "$tag_filter" --sort=creatordate --contains $results
+        git tag --list "$tag_filter" --sort=creatordate --contains $(sed 's/:.*$//g' <<< $results)
     } | jq -R '.' | jq -s "map({ref: .})" >&3
   else
     echo "$results" | jq -R '.' | jq -s "map({ref: .})" >&3
