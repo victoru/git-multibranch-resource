@@ -26,6 +26,7 @@ ignore_branches=$(jq -r '.source.ignore_branches // ""' < $payload)
 paths="$(jq -r '(.source.paths // ["."])[]' < $payload)" # those "'s are important
 ignore_paths="$(jq -r '":!" + (.source.ignore_paths // [])[]' < $payload)" # these ones too
 last_refs=$(jq -r '.version.ref // ""' < $payload)
+tag_filter=$(jq -r '.source.tag_filter // ""' < $payload)
 
 ## Redis stuff to support cleaner multibranch behaviour
 redis_host=$(jq -r '.source.redis.host // ""' < $payload)
@@ -235,7 +236,13 @@ else
 fi
 
 if [ -n "$results" ] ; then
-  echo "$results" | jq -R '.' | jq -s "map({ref: .})" >&3
+  if [ -n "$tag_filter" ]; then
+    {
+        git tag --list "$tag_filter" --sort=creatordate --contains $results
+    } | jq -R '.' | jq -s "map({ref: .})" >&3
+  else
+    echo "$results" | jq -R '.' | jq -s "map({ref: .})" >&3
+  fi
 else
   echo "[]" >&3
 fi
