@@ -125,7 +125,7 @@ then
 fi
 
 new_ref="$(echo "$(git rev-parse HEAD)$ref_extras" | jq -Rr .)"
-tag_name="$(git describe --tags --exact-match||false)"
+tag_name="$(git describe --tags --exact-match||true)"
 
 
 # Store committer email in .git/committer. Can be used to send email to last committer on failed build
