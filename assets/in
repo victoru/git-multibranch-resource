@@ -82,7 +82,7 @@ git clone ${single_branch_flag}${depthflag} $uri $branchflag $destination
 cd $destination
 
 git checkout -q $ref || {
-  git fetch origin $ref:$ref
+  git fetch --tags
   git checkout -q $ref
 }
 git log -1 --oneline
@@ -125,7 +125,7 @@ then
 fi
 
 new_ref="$(echo "$(git rev-parse HEAD)$ref_extras" | jq -R .)"
-tag_name="$(git describe --tags --exact-match||true)"
+tag_name="$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match)"
 
 
 # Store committer email in .git/committer. Can be used to send email to last committer on failed build
