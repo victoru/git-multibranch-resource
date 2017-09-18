@@ -124,7 +124,8 @@ then
   fi
 fi
 
-new_ref="$(echo "$(git rev-parse HEAD)$ref_extras" | jq -R .)"
+new_ref="$(echo "$(git rev-parse HEAD)$ref_extras" | jq -Rr .)"
+tag_name="$(git describe --tags --exact-match||false)"
 
 
 # Store committer email in .git/committer. Can be used to send email to last committer on failed build
@@ -134,6 +135,11 @@ git --no-pager log -1 --pretty=format:"%ae" > .git/committer
 # Store git-resource returned version ref .git/ref. Useful to know concourse
 # pulled ref in following tasks and resources.
 echo "${new_ref}" > .git/ref
+
+if [ -n "$tag_name" ]
+then
+  echo "${tag_name}" > .git/tag_name
+fi
 
 jq -n "{
   version: {ref: $new_ref},
